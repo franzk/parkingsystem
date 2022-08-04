@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.parkit.parkingsystem.constants.Fare;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -27,6 +28,7 @@ import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
 import com.parkit.parkingsystem.model.Ticket;
 import com.parkit.parkingsystem.service.ParkingService;
 import com.parkit.parkingsystem.util.InputReaderUtil;
+import com.parkit.parkingsystem.util.PricesUtil;
 
 import junit.framework.AssertionFailedError;
 
@@ -183,6 +185,41 @@ public class ParkingDataBaseIT {
 		// 2 - Vehicle enters again
 		ParkingService parkingService2 = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		assertThrows(RuntimeException.class, () -> parkingService2.processIncomingVehicle());
+
+	}
+
+	@Test
+	public void testParkingLotExitWithRecurentUser() {
+
+		// 1 - Vehicle enters two days before now
+		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
+		parkingService.processIncomingVehicle(LocalDateTime.now().minusDays(2));
+
+		// 2 - Vehicle exits one hour later
+		parkingService.processExitingVehicle(LocalDateTime.now().minusDays(2).plusHours(1));
+
+		// 3 - Vehicle enters today, one hour before now
+		parkingService.processIncomingVehicle(LocalDateTime.now().minusHours(1));
+
+		// 4 - Vehicle exits now
+		parkingService.processExitingVehicle();
+
+		// Assert
+		try {
+
+			Ticket ticketToCheck = ticketDAO.getTicket(inputReaderUtil.readVehicleRegistrationNumber());
+
+			assertEquals(inputReaderUtil.readVehicleRegistrationNumber(), ticketToCheck.getVehicleRegNumber());
+			assertThat(ticketToCheck.getOutTime()).isNotNull();
+			
+			// 5% reduction because this is a recurrent client
+			assertThat(ticketToCheck.getPrice()).isEqualTo(PricesUtil.roundToPrice(Fare.CAR_RATE_PER_HOUR * 0.95)); 
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			fail("Error while checking ticket existence");
+		}
 
 	}
 

@@ -118,6 +118,7 @@ public class ParkingService {
 			return ParkingType.BIKE;
 		}
 		default: {
+			// System.out.println("Incorrect input provided");
 			logger.error("ParkingType::getVehichleType : Incorrect input provided");
 			throw new IllegalArgumentException("Entered input is invalid");
 		}
@@ -144,7 +145,7 @@ public class ParkingService {
 		try {
 			ticket.setOutTime(outTime);
 
-			fareCalculatorService.calculateFare(ticket);
+			fareCalculatorService.calculateFare(ticket, (ticketDAO.isRecurringVehicle(vehicleRegNumber)));
 
 			if (ticketDAO.updateTicket(ticket)) {
 				ParkingSpot parkingSpot = ticket.getParkingSpot();

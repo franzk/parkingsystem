@@ -36,4 +36,12 @@ public class FareCalculatorService {
 		}
 
 	}
+
+	public void calculateFare(Ticket ticket, boolean isRecurringUser) {
+		calculateFare(ticket);
+		if (isRecurringUser) {
+			double priceDiscount = ticket.getPrice() * (1.0 - Fare.RECURRING_USER_DISCOUNT);
+			ticket.setPrice(PricesUtil.roundToPrice(priceDiscount));
+		}
+	}
 }
