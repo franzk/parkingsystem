@@ -1,4 +1,4 @@
-package com.parkit.parkingsystem.integration.config;
+package com.parkit.parkingsystem.config;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -18,7 +18,7 @@ public class DataBaseConfigTest {
 
 	private static final Logger logger = LogManager.getLogger("DataBaseConfigTest");
 	
-	public DataBaseConfig dataBaseConfigUnderTest = new DataBaseConfig();
+	private static DataBaseConfig dataBaseConfigUnderTest = new DataBaseConfig();
 
 	@Test
 	public void getConnectionTest() {

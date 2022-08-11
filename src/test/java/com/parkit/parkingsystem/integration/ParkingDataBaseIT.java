@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.parkit.parkingsystem.constants.Fare;
@@ -55,8 +54,6 @@ public class ParkingDataBaseIT {
 	@BeforeEach
 	void setUpPerTest() throws Exception {
 		parkingSpotDAO.dataBaseConfig = dataBaseTestConfig;
-		Mockito.lenient().when(inputReaderUtil.readSelection()).thenReturn(1);
-		Mockito.lenient().when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
 		dataBasePrepareService.clearDataBaseEntries();
 	}
 
@@ -67,12 +64,25 @@ public class ParkingDataBaseIT {
 
 	@Test
 	public void testParkingACar() {
+		when(inputReaderUtil.readSelection()).thenReturn(1);
+		try {
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		testParkingAVehicle();
 	}
 
 	@Test
 	public void testParkingABike() {
 		when(inputReaderUtil.readSelection()).thenReturn(2);
+		try {
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		testParkingAVehicle();
 	}
 
@@ -94,15 +104,16 @@ public class ParkingDataBaseIT {
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
 		ParkingType parkingType = null;
+
 		switch (inputReaderUtil.readSelection()) {
-		case 1:
-			parkingType = ParkingType.CAR;
-			break;
-		case 2:
-			parkingType = ParkingType.BIKE;
-			break;
-		default:
-			throw new AssertionFailedError("Error with selection");
+			case 1:
+				parkingType = ParkingType.CAR;
+				break;
+			case 2:
+				parkingType = ParkingType.BIKE;
+				break;
+			default:
+				throw new AssertionFailedError("Error with selection");
 		}
 
 		// store the next available parking before the incoming process
@@ -144,6 +155,14 @@ public class ParkingDataBaseIT {
 	@Test
 	public void testParkingLotExit() {
 
+		when(inputReaderUtil.readSelection()).thenReturn(1);
+		try {
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
 		parkingService.processIncomingVehicle(LocalDateTime.now().minusMinutes(5));
@@ -178,6 +197,14 @@ public class ParkingDataBaseIT {
 	@Test
 	@Tag("BoundTest")
 	public void testParkingACarThatIsAlreadyInTheParking() {
+		when(inputReaderUtil.readSelection()).thenReturn(1);
+		try {
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		// 1 - Vehicle enters
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		parkingService.processIncomingVehicle();
@@ -190,6 +217,14 @@ public class ParkingDataBaseIT {
 
 	@Test
 	public void testParkingLotExitWithRecurentUser() {
+
+		when(inputReaderUtil.readSelection()).thenReturn(1);
+		try {
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		// 1 - Vehicle enters two days before now
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -211,9 +246,9 @@ public class ParkingDataBaseIT {
 
 			assertEquals(inputReaderUtil.readVehicleRegistrationNumber(), ticketToCheck.getVehicleRegNumber());
 			assertThat(ticketToCheck.getOutTime()).isNotNull();
-			
+
 			// 5% reduction because this is a recurrent client
-			assertThat(ticketToCheck.getPrice()).isEqualTo(PricesUtil.roundToPrice(Fare.CAR_RATE_PER_HOUR * 0.95)); 
+			assertThat(ticketToCheck.getPrice()).isEqualTo(PricesUtil.roundToPrice(Fare.CAR_RATE_PER_HOUR * 0.95));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

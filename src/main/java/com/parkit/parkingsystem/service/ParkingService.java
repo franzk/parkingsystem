@@ -88,10 +88,10 @@ public class ParkingService {
 		int parkingNumber = 0;
 		ParkingSpot parkingSpot = null;
 		ParkingType parkingType = getVehichleType();
+		try {
 		parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
 
-		try {
-
+	
 			if (parkingNumber > 0) {
 				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
 			} else {
@@ -118,7 +118,6 @@ public class ParkingService {
 			return ParkingType.BIKE;
 		}
 		default: {
-			// System.out.println("Incorrect input provided");
 			logger.error("ParkingType::getVehichleType : Incorrect input provided");
 			throw new IllegalArgumentException("Entered input is invalid");
 		}
@@ -141,7 +140,7 @@ public class ParkingService {
 		if (ticket == null) {
 			throw new RuntimeException("Error : This vehicle is not in the parking.");
 		}
-
+		
 		try {
 			ticket.setOutTime(outTime);
 
