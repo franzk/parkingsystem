@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.parkit.parkingsystem.constants.ErrorMessages;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.dao.ParkingSpotDAO;
 import com.parkit.parkingsystem.dao.TicketDAO;
@@ -14,7 +15,7 @@ import com.parkit.parkingsystem.util.InputReaderUtil;
 
 public class ParkingService {
 
-	private static final Logger logger = LogManager.getLogger("ParkingService");
+	private static final Logger logger = LogManager.getLogger(ParkingService.class);
 
 	private static FareCalculatorService fareCalculatorService = new FareCalculatorService();
 
@@ -35,8 +36,7 @@ public class ParkingService {
 		try {
 			vehicleRegNumber = getVehichleRegNumber();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(ErrorMessages.GET_VEHICLE_REG_NUMBER, e);
 		}
 
 		// first check if this vehicle is not already in the parking
@@ -89,9 +89,8 @@ public class ParkingService {
 		ParkingSpot parkingSpot = null;
 		ParkingType parkingType = getVehichleType();
 		try {
-		parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
+			parkingNumber = parkingSpotDAO.getNextAvailableSlot(parkingType);
 
-	
 			if (parkingNumber > 0) {
 				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
 			} else {
@@ -111,16 +110,16 @@ public class ParkingService {
 		System.out.println("2 BIKE");
 		int input = inputReaderUtil.readSelection();
 		switch (input) {
-		case 1: {
-			return ParkingType.CAR;
-		}
-		case 2: {
-			return ParkingType.BIKE;
-		}
-		default: {
-			logger.error("ParkingType::getVehichleType : Incorrect input provided");
-			throw new IllegalArgumentException("Entered input is invalid");
-		}
+			case 1: {
+				return ParkingType.CAR;
+			}
+			case 2: {
+				return ParkingType.BIKE;
+			}
+			default: {
+				logger.error("ParkingType::getVehichleType : Incorrect input provided");
+				throw new IllegalArgumentException("Entered input is invalid");
+			}
 		}
 	}
 
@@ -133,14 +132,14 @@ public class ParkingService {
 			vehicleRegNumber = getVehichleRegNumber();
 			ticket = ticketDAO.getTicket(vehicleRegNumber);
 		} catch (Exception e) {
-			logger.error("Unable to process exiting vehicle", e);
+			logger.error(ErrorMessages.PROCESS_EXITING_VEHICLE_REGNUMBER_PROBLEM, e);
 			return;
 		}
 
 		if (ticket == null) {
 			throw new RuntimeException("Error : This vehicle is not in the parking.");
 		}
-		
+
 		try {
 			ticket.setOutTime(outTime);
 
@@ -154,10 +153,10 @@ public class ParkingService {
 				System.out.println(
 						"Recorded out-time for vehicle number:" + ticket.getVehicleRegNumber() + " is:" + outTime);
 			} else {
-				System.out.println("Unable to update ticket information. Error occurred");
+				logger.error(ErrorMessages.UPDATE_TICKET);
 			}
 		} catch (Exception e) {
-			logger.error("Unable to process exiting vehicle", e);
+			logger.error(ErrorMessages.PROCESS_EXITING, e);
 		}
 	}
 

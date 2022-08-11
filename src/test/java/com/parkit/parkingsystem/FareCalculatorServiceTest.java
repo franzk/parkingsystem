@@ -61,7 +61,7 @@ public class FareCalculatorServiceTest {
 	}
 
 	@Test
-	@Tag("BoundTest")
+	@Tag("ErrorTest")
 	public void calculateFareUnkownType() {
 		LocalDateTime inTime = LocalDateTime.now().minusHours(1); // inTime set to one hour in the past
 		LocalDateTime outTime = LocalDateTime.now();
@@ -75,7 +75,7 @@ public class FareCalculatorServiceTest {
 	}
 
 	@Test
-	@Tag("BoundTest")
+	@Tag("ErrorTest")
 	public void calculateFareBikeWithFutureInTime() {
 		LocalDateTime inTime = LocalDateTime.now().plusHours(1); // inTime set to one hour in the future
 		LocalDateTime outTime = LocalDateTime.now();

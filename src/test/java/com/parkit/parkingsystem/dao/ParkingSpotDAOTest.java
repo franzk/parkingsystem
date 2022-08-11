@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import com.parkit.parkingsystem.constants.ParkingType;
 import com.parkit.parkingsystem.integration.config.DataBaseTestConfig;
 import com.parkit.parkingsystem.integration.service.DataBasePrepareService;
+import com.parkit.parkingsystem.model.ParkingSpot;
 
 public class ParkingSpotDAOTest {
 
@@ -33,4 +34,9 @@ public class ParkingSpotDAOTest {
 		assertThat(availableSlot).isGreaterThanOrEqualTo(0);
 	}
 
+	@Test
+	 public void updateParkingTest() {
+		ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+		assertThat(parkingSpotDAO.updateParking(parkingSpot)).isTrue();
+	}
 }

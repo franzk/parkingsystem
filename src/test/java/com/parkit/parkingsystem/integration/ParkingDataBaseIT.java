@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -92,13 +91,6 @@ public class ParkingDataBaseIT {
 		assertThrows(AssertionFailedError.class, () -> testParkingAVehicle());
 	}
 
-	@Disabled
-	@Test
-	public void testParkingIsFull() {
-		// Comment tester ?
-		assertThrows(Exception.class, () -> testParkingAVehicle());
-	}
-
 	public void testParkingAVehicle() {
 
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -144,7 +136,7 @@ public class ParkingDataBaseIT {
 	}
 
 	@Test
-	@Tag("BoundTest")
+	@Tag("ErrorTest")
 	public void testNotExistingVehicleType() {
 		when(inputReaderUtil.readSelection()).thenReturn(500);
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -188,14 +180,14 @@ public class ParkingDataBaseIT {
 	}
 
 	@Test
-	@Tag("BoundTest")
+	@Tag("ErrorTest")
 	public void testVehicleNotPresentInTheParkingExit() {
 		ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 		assertThrows(RuntimeException.class, () -> parkingService.processExitingVehicle());
 	}
 
 	@Test
-	@Tag("BoundTest")
+	@Tag("ErrorTest")
 	public void testParkingACarThatIsAlreadyInTheParking() {
 		when(inputReaderUtil.readSelection()).thenReturn(1);
 		try {
@@ -248,7 +240,7 @@ public class ParkingDataBaseIT {
 			assertThat(ticketToCheck.getOutTime()).isNotNull();
 
 			// 5% reduction because this is a recurrent client
-			assertThat(ticketToCheck.getPrice()).isEqualTo(PricesUtil.roundToPrice(Fare.CAR_RATE_PER_HOUR * 0.95));
+			assertThat(ticketToCheck.getPrice()).isEqualTo(PricesUtil.roundToPrice(Fare.CAR_RATE_PER_HOUR * (1 - Fare.RECURRING_USER_DISCOUNT)));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
