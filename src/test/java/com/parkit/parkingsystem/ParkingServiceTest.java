@@ -131,9 +131,9 @@ public class ParkingServiceTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		parkingService.processIncomingVehicle();
+		assertThrows(Exception.class, () -> parkingService.processIncomingVehicle());
 
-		assertThat(logCaptor.getErrorLogs()).contains(ErrorMessages.GET_VEHICLE_REG_NUMBER);
+		//assertThat(logCaptor.getErrorLogs()).contains(ErrorMessages.GET_VEHICLE_REG_NUMBER);
 	}
 
 	@Test

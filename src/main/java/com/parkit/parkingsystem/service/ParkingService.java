@@ -45,8 +45,20 @@ public class ParkingService {
 		if ((checkPreviousTicket != null) && (checkPreviousTicket.getOutTime() == null)) {
 			throw new RuntimeException("This vehicle is already in the parking");
 		}
+		
+		ParkingSpot parkingSpot = null;
+		try {
+			parkingSpot = getNextParkingNumberIfAvailable();
 
-		ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
+		} 
+		catch (IllegalArgumentException e) {
+			logger.error("Unable to process incoming vehicle", e);
+			throw new IllegalArgumentException(e);
+		}
+		catch (Exception e) {
+			logger.error("Unable to process incoming vehicle", e);
+			throw new RuntimeException(e);
+		}
 
 		try {
 
@@ -94,13 +106,13 @@ public class ParkingService {
 			if (parkingNumber > 0) {
 				parkingSpot = new ParkingSpot(parkingNumber, parkingType, true);
 			} else {
-				throw new Exception("Error fetching parking number from DB. Parking slots might be full");
+				throw new RuntimeException("Error fetching parking number from DB. Parking slots might be full");
 			}
 		} catch (IllegalArgumentException ie) {
 			logger.error("Error parsing user input for type of vehicle", ie);
-		} catch (Exception e) {
+		}/* catch (Exception e) {
 			logger.error("Error fetching next available parking slot", e);
-		}
+		}*/
 		return parkingSpot;
 	}
 
