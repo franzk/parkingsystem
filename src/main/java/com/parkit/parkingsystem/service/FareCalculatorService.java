@@ -9,9 +9,14 @@ import com.parkit.parkingsystem.util.PricesUtil;
 public class FareCalculatorService {
 
 	public void calculateFare(Ticket ticket) {
-		if ((ticket.getOutTime() == null) || (ticket.getOutTime().isBefore(ticket.getInTime()))) {
-			throw new IllegalArgumentException("Out time provided is incorrect:" + ticket.getOutTime().toString());
+		if (ticket.getOutTime() == null) {
+			throw new IllegalArgumentException("Out time provided is incorrect: null");
 		}
+		
+		if (ticket.getOutTime().isBefore(ticket.getInTime())) {
+			throw new IllegalArgumentException("Out time provided is incorrect: " + ticket.getOutTime().toString());
+		}
+		
 
 		Duration duration = Duration.between(ticket.getInTime(), ticket.getOutTime());
 		double durationInHours = duration.toMillis() / (60.0 * 60.0 * 1000.0);

@@ -45,41 +45,37 @@ public class ParkingService {
 		if ((checkPreviousTicket != null) && (checkPreviousTicket.getOutTime() == null)) {
 			throw new RuntimeException("This vehicle is already in the parking");
 		}
-		
+
 		ParkingSpot parkingSpot = null;
 		try {
 			parkingSpot = getNextParkingNumberIfAvailable();
 
-		} 
-		catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException e) {
 			logger.error("Unable to process incoming vehicle", e);
 			throw new IllegalArgumentException(e);
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			logger.error("Unable to process incoming vehicle", e);
 			throw new RuntimeException(e);
 		}
 
 		try {
 
-			if (parkingSpot != null && parkingSpot.getId() > 0) {
-				parkingSpot.setAvailable(false);
-				parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
-															// false
+			parkingSpot.setAvailable(false);
+			parkingSpotDAO.updateParking(parkingSpot);// allot this parking space and mark it's availability as
+														// false
 
-				Ticket ticket = new Ticket();
-				// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
-				// ticket.setId(ticketID);
-				ticket.setParkingSpot(parkingSpot);
-				ticket.setVehicleRegNumber(vehicleRegNumber);
-				ticket.setPrice(0);
-				ticket.setInTime(inTime);
-				ticket.setOutTime(null);
-				ticketDAO.saveTicket(ticket);
-				System.out.println("Generated Ticket and saved in DB");
-				System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
-				System.out.println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
-			}
+			Ticket ticket = new Ticket();
+			// ID, PARKING_NUMBER, VEHICLE_REG_NUMBER, PRICE, IN_TIME, OUT_TIME)
+			// ticket.setId(ticketID);
+			ticket.setParkingSpot(parkingSpot);
+			ticket.setVehicleRegNumber(vehicleRegNumber);
+			ticket.setPrice(0);
+			ticket.setInTime(inTime);
+			ticket.setOutTime(null);
+			ticketDAO.saveTicket(ticket);
+			System.out.println("Generated Ticket and saved in DB");
+			System.out.println("Please park your vehicle in spot number:" + parkingSpot.getId());
+			System.out.println("Recorded in-time for vehicle number:" + vehicleRegNumber + " is:" + inTime);
 
 		} catch (Exception e) {
 			logger.error("Unable to process incoming vehicle", e);
@@ -110,9 +106,7 @@ public class ParkingService {
 			}
 		} catch (IllegalArgumentException ie) {
 			logger.error("Error parsing user input for type of vehicle", ie);
-		}/* catch (Exception e) {
-			logger.error("Error fetching next available parking slot", e);
-		}*/
+		}
 		return parkingSpot;
 	}
 

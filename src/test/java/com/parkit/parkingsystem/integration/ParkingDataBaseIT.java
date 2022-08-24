@@ -206,7 +206,7 @@ public class ParkingDataBaseIT {
 		assertThrows(RuntimeException.class, () -> parkingService2.processIncomingVehicle());
 
 	}
-
+	
 	@Test
 	public void testParkingLotExitWithRecurentUser() {
 

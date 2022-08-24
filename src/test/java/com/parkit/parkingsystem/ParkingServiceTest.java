@@ -132,13 +132,11 @@ public class ParkingServiceTest {
 			e.printStackTrace();
 		}
 		assertThrows(Exception.class, () -> parkingService.processIncomingVehicle());
-
-		//assertThat(logCaptor.getErrorLogs()).contains(ErrorMessages.GET_VEHICLE_REG_NUMBER);
 	}
 
 	@Test
 	@Tag("ErrorTest")
-	public void processIncomingVehicleWithVehicleAllreadyInParking() {
+	public void processIncomingVehicleWithVehicleAllreadyInParkingTest() {
 
 		Ticket ticket = new Ticket();
 		ticket.setOutTime(null);
@@ -153,8 +151,47 @@ public class ParkingServiceTest {
 		when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
 
 		assertThrows(RuntimeException.class, () -> parkingService.processIncomingVehicle());
+		
+		
 	}
 
+	@Test
+	@Tag("ErrorTest")
+	public void processIncomingCarWithRecurringUserTest() {
+
+		Ticket ticket = new Ticket();
+		ticket.setOutTime(LocalDateTime.now());
+
+		try {
+			when(inputReaderUtil.readSelection()).thenReturn(1);
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+			when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		when(ticketDAO.getTicket(anyString())).thenReturn(ticket);
+		parkingService.processIncomingVehicle();
+		verify(parkingSpotDAO, Mockito.times(1)).updateParking(any(ParkingSpot.class));
+	}
+	
+	
+	@Test
+	@Tag("ErrorTest")
+	public void processIncomingCarWithErrorWhileGettingNextAvailableSlotTest() {
+		try {
+			when(inputReaderUtil.readSelection()).thenReturn(1);
+			when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
+			when(parkingSpotDAO.getNextAvailableSlot(any(ParkingType.class))).thenReturn(-1);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		assertThrows(Exception.class, () -> parkingService.processIncomingVehicle());
+		
+	}
+	
 	@Test
 	@Tag("ErrorTest")
 	public void getNextParkingNumberIfAvailableWithWrongParkingTypeTest() {
@@ -190,7 +227,7 @@ public class ParkingServiceTest {
 
 	@Test
 	@Tag("ErrorTest")
-	public void processExitingVehicleWithUpdateTicketError() {
+	public void processExitingVehicleWithUpdateTicketErrorTest() {
 		when(ticketDAO.updateTicket(any(Ticket.class))).thenReturn(false);
 		processExitingVehicleForTests();
 		assertThat(logCaptor.getErrorLogs().contains(ErrorMessages.UPDATE_TICKET));
@@ -212,7 +249,7 @@ public class ParkingServiceTest {
 
 	@Test
 	@Tag("ErrorTest")
-	public void processExitingVehicleTestWithErrorGettingVehicleRegNumber() {
+	public void processExitingVehicleTestWithErrorGettingVehicleRegNumberTest() {
 
 		try {
 			when(inputReaderUtil.readVehicleRegistrationNumber()).thenThrow(Exception.class);

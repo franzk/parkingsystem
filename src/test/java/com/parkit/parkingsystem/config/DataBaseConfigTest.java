@@ -16,7 +16,7 @@ import com.parkit.parkingsystem.constants.DBConstants;
 public class DataBaseConfigTest {
 
 	private static final Logger logger = LogManager.getLogger("DataBaseConfigTest");
-	
+
 	private static DataBaseConfig dataBaseConfigUnderTest = new DataBaseConfig();
 
 	@Test
@@ -32,6 +32,11 @@ public class DataBaseConfigTest {
 		} finally {
 			dataBaseConfigUnderTest.closeConnection(con);
 		}
+	}
+
+	@Test
+	public void closeNullConnectionTest() {
+		dataBaseConfigUnderTest.closeConnection(null);
 	}
 
 	@Test
@@ -51,7 +56,12 @@ public class DataBaseConfigTest {
 			dataBaseConfigUnderTest.closeConnection(con);
 		}
 	}
-	
+
+	@Test
+	public void closeNullPreparedStatementTest() {
+		dataBaseConfigUnderTest.closePreparedStatement(null);
+	}
+
 	@Test
 	public void closeResultSetTest() {
 		Connection con = null;
@@ -61,15 +71,20 @@ public class DataBaseConfigTest {
 			ps.setString(1, "");
 			ResultSet rs = ps.executeQuery();
 			dataBaseConfigUnderTest.closeResultSet(rs);
-			
+
 			assertThat(rs.isClosed()).isTrue();
-			
+
 			dataBaseConfigUnderTest.closePreparedStatement(ps);
 		} catch (Exception ex) {
 			logger.error("Error while closing Prepared Statement", ex);
 		} finally {
 			dataBaseConfigUnderTest.closeConnection(con);
-		}		
+		}
+	}
+
+	@Test
+	public void closeNullResultSetTest() {
+		dataBaseConfigUnderTest.closeResultSet(null);
 	}
 
 }
